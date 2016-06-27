@@ -100,7 +100,7 @@ Docker launched 13-Mar-2013. Docker 1.11+ is built on runC (CLI tool for spawnin
 &mdash;  https://docs.docker.com/engine/understanding-docker/
 
 Note:
-Docker manages a repository of images, that it can execute as running containers. Data volumes serve to bridge filesystem mounts on the host system with filesystem mounts as seen from within the containers. Docker also manages the connection of network interfaces from within the containers to the network interfaces on the host machine. For example, a Spring Boot application is configured to listen on port 8080, and Docker can expose port 32678 or 8080 that connects to port 8080 within the container. This allows things such as horizontal scaling of the number of containers based on the same image, each exposed on a different port on the host machine, but the same port within the containers.
+Docker manages a repository of images, that it can execute as running containers. Data volumes serve to bridge filesystem mounts on the host system with filesystem mounts as seen from within the containers. Docker also manages the connection of network interfaces from within the containers to the network interfaces on the host machine. For example, a Spring Boot application is configured to listen on port 8080, and Docker can expose port 32678 or 8080 that connects to port 8080 within the container. This allows things such as horizontal scaling of the number of containers based on the same image, each exposed on a different port on the host machine, but the same port within the containers. Microsoft has emerging support for Docker.
 
 
 ## Containerization - Rkt
@@ -176,6 +176,18 @@ Note:
 This Jenkinsfile is used on one of our current projects, and represents compiling the code, running unit tests, creating a git tag, pushing the tag to Github, building the Docker image, pushing that image to a SaaS Artifactory repository, and relaying a request through our build bridge application to deploy the Docker container to a Mesos cluster via Marathon REST API. Jenkins was configured to watch an entire Github organization for any repository that contains a Jenkinsfile file, and automatically create a job to build it.
 
 
+## Continuous Integration/Delivery - Docker Registries
+- [Docker Hub](https://hub.docker.com/)
+- [JFrog Artifactory](https://www.jfrog.com/artifactory/)
+- [Sonatype Nexus](http://www.sonatype.org/nexus/)
+- [Google Container Registry](https://cloud.google.com/container-registry/)
+- [Amazon EC2 Container Registry](https://aws.amazon.com/ecr/)
+- [CoreOS Quay.io](https//quay.io/)
+
+Note:
+Docker defaults to Docker Hub, and this is the central public registry for Docker images. Private registry accounts can be purchased. The others all behave the same way. We chose ArtifactoryOnline as a SaaS that serves our Maven dependency repository as well as a Docker image registry.
+
+
 
 ## Cloud Services
 - Amazon Web Services (AWS)
@@ -207,7 +219,6 @@ AWS is the industry frontrunner for cloud computing, with their Elastic Cloud Co
         - [Chronos](https://mesos.github.io/chronos/)
     - [Kubernetes](http://kubernetes.io/)
 - [Docker Swarm](https://docs.docker.com/swarm/)
-- [Mesosphere DC/OS](https://dcos.io/) - Data Center Operating System
 
 Note:
 When containers cloud computing are combined, one host machine is usually not enough. Clusters of machines to share load and provide redundancy is the key to a stable and responsive server infrastructure.
@@ -224,12 +235,14 @@ When an app is deployed through Marathon, the amount of CPU and RAM resources ar
 
 ## Clusters - Apache Mesos
 - [Mantl](http://mantl.io/)
-- [Rancher](http://rancher.com/)
+- [Mesosphere DC/OS](https://dcos.io/) - Data Center Operating System
 
 Note:
 These are FOSS bundles that packages Mesos, Marathon, Chronos, DC/OS, and other services. Marathon is a container orchestration product that identifies where in the Mesos cluster to deploy containers based on CPU and RAM availability. Marathon uses Chronos to actually schedule the deploys to the cluster. Chronos is a fault-tolerant cron replacement for job orchestration. The myriad of components can be configured manually, but in the same theme as the other DevOps technologies, there are emerging packagers of the packages to automate things.
 
 We chose mantl at one of our recent clients because it uses the same technologies we were targeting and building into a custom packaged solution. Mantl uses Terraform and Ansible for the provisioning tools.
+
+Another interesting product is Rancher, http://rancher.com/, can provision Mesos clusters, as well as Docker Swarm or their own Cattle clusters.
 
 
 ## Clusters - Docker Swarm
@@ -241,6 +254,15 @@ We chose mantl at one of our recent clients because it uses the same technologie
 - Jenkins
 
 Note: Docker Swarm is moving fast to because a full stack for clustering as well as service registry, discovery, registration, load balancing, and reverse proxying.
+
+
+## Clusters - Caas / PaaS
+![](/images/process.png)
+
+&mdash; http://www.cloudcredo.com/pulling-paas-to-pieces/
+
+Note:
+Cloud Foundry is a platform as a service, and shares many of the same qualities as CaaS solutions like Mesos et. al. clusters, Mesosphere, and Amazon ECS. Cloud Foundry is popular, and evolving quickly to compete with CaaS and other PaaS solutions. On a recent project, we went with CaaS on AWS because AWS was already adopting in the organization, and we started before Cloud Foundry added support for deploying to AWS.
 
 
 
