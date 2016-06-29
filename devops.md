@@ -147,6 +147,7 @@ Jenkins was selected because of familiarity with the product from past CI use, f
 ## Continuous Integration/Delivery - Jenkins
 ```groovy
 #!/usr/bin/env groovy
+
 /* Only keep the 10 most recent builds. */
 properties([[$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', numToKeepStr: '10']]])
 
@@ -160,13 +161,20 @@ node {
     sh 'git push origin HEAD --dry-run'
 
     timeout(120) {
-        gradle '-Drepo=v2 clean release artifactoryDockerPublish --stacktrace'
-        def matcher = readFile('version.txt') =~ 'info.build.version=(.+)'
-        if (matcher) {
-            echo "Deploying version ${matcher[0][1]}"
-            sh "curl -XPOST https://deploy.build.momcorp.com/service/learning-analytics-service/${matcher[0][1]}/dev"
+        gradle '--refresh-dependencies -Drepo=v2 clean release artifactoryDockerPublish --stacktrace'
+
+        def version = getBuildNumber(readFile('version.txt'))
+        if (version) {
+            echo "Deploying version ${version}"
+            sh "curl -XPOST https://deploy.build.momcorp.com/service/myservice/${version}/dev"
         }
     }
+}
+
+@NonCPS
+def getBuildNumber(contents) {
+    def matcher = contents =~ 'info.build.version=(.+)'
+    matcher ? matcher[0][1] : null
 }
 
 void gradle(String tasks, String switches = null) {...}
@@ -250,8 +258,7 @@ Another interesting product is Rancher, http://rancher.com/, can provision Mesos
 - Docker
 - Dokku
 - Docker Compose
-- Krane
-- Jenkins
+- Docker Machine
 
 Note: Docker Swarm is moving fast to because a full stack for clustering as well as service registry, discovery, registration, load balancing, and reverse proxying.
 
